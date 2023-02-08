@@ -3,3 +3,5 @@
 .env
 *.memory-card.json
 lib
+src/config.ts
+.DS_Store
