@@ -1,7 +1,7 @@
 import { WechatyBuilder } from 'wechaty';
 import qrcodeTerminal from 'qrcode-terminal';
 import config from './config.js';
-import { replyMessage, initChatGPT } from './chatgpt.js';
+import { replyMessage } from './chatgpt.js';
 
 let bot: any = {};
 initProjest();
@@ -19,7 +19,7 @@ async function onMessage(msg) {
   if (room && isText) {
     const topic = await room.topic();
     console.log(
-      `Group name: ${topic} talker: ${await contact.name()} content: ${content}`
+      `[群聊名]: ${topic} [用户名]: ${await contact.name()} [内容]: ${content}`
     );
 
     const pattern = RegExp(`^@${receiver.name()}\\s+${config.groupKey}[\\s]*`);
@@ -35,7 +35,7 @@ async function onMessage(msg) {
       }
     }
   } else if (isText) {
-    console.log(`talker: ${alias} content: ${content}`);
+    console.log(`[用户名]: ${alias} [内容]: ${content}`);
     if (config.autoReply) {
       if (content.startsWith(config.privateKey)) {
         replyMessage(
@@ -84,7 +84,6 @@ async function onFriendShip(friendship) {
 
 async function initProjest() {
   try {
-    await initChatGPT();
     bot = WechatyBuilder.build({
       name: 'WechatEveryDay',
       puppet: 'wechaty-puppet-wechat', // 如果有token，记得更换对应的puppet

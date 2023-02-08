@@ -19,7 +19,6 @@ export async function getCookies() {
     await page.setUserAgent(
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
     );
-    console.log(11111111);
     await page.goto('https://chat.openai.com');
     await page.waitForSelector('#__next .btn-primary');
     // wait for networkidle
@@ -30,7 +29,6 @@ export async function getCookies() {
       waitUntil: 'networkidle0',
     });
 
-    console.log(2222);
     await page.type('#username', '');
     await sleep(1 * 1000);
     await page.click('button[type="submit"]');
@@ -39,12 +37,10 @@ export async function getCookies() {
 
     await page.type('#password', '');
     await page.click('button[type="submit"]');
-    console.log(333);
     // await sleep(1 * 1000);
     await page.waitForNavigation({
       waitUntil: 'networkidle0',
     });
-    console.log(4444);
     const cookies = await page.cookies();
     // fs.writeFileSync('cookies.json', JSON.stringify(cookies));
 
@@ -52,6 +48,6 @@ export async function getCookies() {
     await browser.close();
     return cookies;
   } catch (error) {
-    console.log('error: ', error);
+    console.error(error);
   }
 }

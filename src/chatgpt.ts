@@ -1,43 +1,33 @@
-import { ChatGPTAPI } from 'chatgpt';
+import { Configuration, OpenAIApi } from 'openai';
 import config from './config.js';
-import { retryRequest } from './utils.js';
 
-let chatGPT: any = {};
-let chatOption = {};
-export function initChatGPT() {
-  chatGPT = new ChatGPTAPI({
-    apiKey: config.OPENAI_API_KEY,
-  });
-}
+const configuration = new Configuration({
+  apiKey: config.OPENAI_API_KEY,
+});
 
-async function getChatGPTReply(content) {
-  const { conversationId, text, id } = await chatGPT.sendMessage(
-    content,
-    chatOption
-  );
-  chatOption = {
-    conversationId,
-    parentMessageId: id,
-  };
-  console.log('response: ', conversationId, text);
-  // response is a markdown-formatted string
-  return text;
-}
+const openai = new OpenAIApi(configuration);
 
 export async function replyMessage(contact, content) {
   try {
     if (
       content.trim().toLocaleLowerCase() === config.resetKey.toLocaleLowerCase()
     ) {
-      chatOption = {};
       await contact.say('Previous conversation has been reset.');
       return;
     }
-    const message = await retryRequest(
-      () => getChatGPTReply(content),
-      config.retryTimes,
-      500
-    );
+
+    const response = await openai.createCompletion({
+      model: 'text-davinci-003',
+      prompt: content,
+      temperature: 0.7,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+    const message = response.data.choices[0].text;
+
+    console.log('open-ai message: ', message);
 
     if (
       (contact.topic && contact?.topic() && config.groupReplyMode) ||
